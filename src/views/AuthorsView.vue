@@ -1,25 +1,20 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue'
-import axios from 'axios';
+  import { onMounted, reactive } from 'vue';
+  import { getAuthors } from '@/api/api';
 
-const state = reactive({
-  authors: [],
-  isLoading: true,
-});
+  const state = reactive({
+    authors: [],
+    isLoading: true,
+  });
 
-async function getAuthors() {
-  try {
-    const response = await axios.get('http://localhost:8080/authors');
-    state.authors = response.data;
-  } catch (error) {
-    console.error('Error fetching authors', error);
-  } finally {
-    state.isLoading = false;
+  async function getAllAuthors() {
+    state.authors = await getAuthors().then(
+      state.isLoading = false
+    );
   }
-}
 
 onMounted(async () => {
-  await getAuthors();
+  await getAllAuthors();
 });
 </script>
 

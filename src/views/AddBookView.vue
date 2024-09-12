@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import router from '@/router'
-import axios from 'axios'
-import InputField from '@/components/InputField.vue'
-import InputSelect from '@/components/InputSelect.vue'
+import { ref, reactive, onMounted } from 'vue';
+import router from '@/router';
+import InputField from '@/components/InputField.vue';
+import InputSelect from '@/components/InputSelect.vue';
+import { createBook, createAuthor, getAuthors } from '@/api/api';
 
 const isNewAuthor = ref('existing');
 const authors = ref([]);
@@ -26,22 +26,19 @@ const form = reactive({
 
 async function handleSubmit() {
   if (isNewAuthor.value == 'existing') {
-    axios.post('http://localhost:8080/books', {...form.book, author_id: form.existingAuthorID})
+    await createBook({...form.book, author_id: form.existingAuthorID})
       .then(() => {
         router.push('/books');
-      })
-      .catch(error => {
-        console.error('Error creating book', error);
       });
   } else {
-    axios.post('http://localhost:8080/authors', form.author)
-      .then(async (response) => {
-        const authorID = response.data;
-        await axios.post('http://localhost:8080/books', {
+    await createAuthor(form.author)
+      .then(async (newAuthorID) => {
+        await createBook({
           ...form.book,
-          author_id: authorID
+          author_id: newAuthorID
         });
-
+      })
+      .then(async () => {
         await router.push('/books');
       })
       .catch(error => {
@@ -52,16 +49,14 @@ async function handleSubmit() {
 
 onMounted(async () => {
   try {
-    const response = await axios.get('http://localhost:8080/authors');
-    authors.value = response.data;
+    const retrievedAuthors = await getAuthors();
+    authors.value = retrievedAuthors;
 
-    response.data.map(author => {
-      console.log(author);
+    retrievedAuthors.map(author => {
       authorsAsOptions.value.push({
         value: author.author_id,
         label: author.first_name + ' ' + author.last_name,
       })
-      console.log(authorsAsOptions.value)
     })
   } catch (error) {
     console.error('Error fetching authors', error);
@@ -72,8 +67,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="w-1/2 mx-auto">
-    <h1 class="text-7xl text-center">Add New Book</h1>
+  <div class="w-1/4 mx-auto">
+    <h1 class="text-5xl text-center mt-16">Add New Book</h1>
 
     <form @submit.prevent="handleSubmit">
       <fieldset class="flex flex-col gap-4 my-8">

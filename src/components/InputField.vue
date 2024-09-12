@@ -16,6 +16,6 @@ const model = defineModel()
     :id="props.id"
     :type="props.type"
     :placeholder="props.placeholder"
-    class="text-black"
+    class="text-black px-4 py-2"
   />
 </template>

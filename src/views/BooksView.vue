@@ -1,45 +1,31 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue'
-import axios from 'axios';
-import DetailsCard from '@/components/BookCard.vue'
-import StatusButtonGroup from '@/components/StatusButtonGroup.vue'
+import { onMounted, reactive } from 'vue';
+import DetailsCard from '@/components/BookCard.vue';
+import StatusButtonGroup from '@/components/StatusButtonGroup.vue';
+import { getBooks, deleteBook } from '@/api/api';
 
 const state = reactive({
   books: [],
-  status: '',
   isLoading: true,
 });
 
-async function getBooks() {
-  try {
-    const response = await axios.get(`http://localhost:8080/books${state.status ? `?status=${state.status}` : ''}`);
-    state.books = response.data;
-  } catch (error) {
-    console.error('Error fetching books', error);
-  } finally {
-    state.isLoading = false;
-  }
+async function getAllBooks() {
+  state.books = await getBooks().then(
+    state.isLoading = false
+  );
 }
 
-async function deleteBook(id: number) {
-  try {
-    await axios.delete(`http://localhost:8080/books/${id}`);
-    await getBooks();
-  } catch (error) {
-    console.error('Error deleting book', error);
-  } finally {
-    state.isLoading = false;
-  }
+async function deleteBookById(id: number) {
+  await deleteBook(id);
+  state.books = await getBooks();
 }
 
 async function filterBooksByStatus(status: string) {
-  state.status = status;
-
-  await getBooks();
+  state.books = await getBooks(status);
 }
 
 onMounted(async () => {
-  await getBooks()
+  await getAllBooks();
 });
 </script>
 
@@ -64,7 +50,7 @@ onMounted(async () => {
       :wordCount="book.word_count"
       :status="book.status"
       :author="book.author.first_name + ' ' + book.author.last_name"
-      @delete-book="(id) => deleteBook(id)"
+      @delete-book="(id) => deleteBookById(id)"
     />
   </div>
 </template>
