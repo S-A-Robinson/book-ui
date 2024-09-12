@@ -2,9 +2,13 @@
 import { ref, reactive, onMounted } from 'vue'
 import router from '@/router'
 import axios from 'axios'
+import InputField from '@/components/InputField.vue'
+import InputSelect from '@/components/InputSelect.vue'
 
 const isNewAuthor = ref('existing');
 const authors = ref([]);
+const authorsAsOptions = ref([]);
+const isLoading = ref(true);
 
 const form = reactive({
   book: {
@@ -50,8 +54,19 @@ onMounted(async () => {
   try {
     const response = await axios.get('http://localhost:8080/authors');
     authors.value = response.data;
+
+    response.data.map(author => {
+      console.log(author);
+      authorsAsOptions.value.push({
+        value: author.author_id,
+        label: author.first_name + ' ' + author.last_name,
+      })
+      console.log(authorsAsOptions.value)
+    })
   } catch (error) {
     console.error('Error fetching authors', error);
+  } finally {
+    isLoading.value = false;
   }
 })
 </script>
@@ -64,32 +79,40 @@ onMounted(async () => {
       <fieldset class="flex flex-col gap-4 my-8">
         <legend class="text-2xl mb-4">Book Details</legend>
 
-        <label for="title">Title</label>
-        <input
+        <InputField
           v-model="form.book.title"
-          id="title"
-          class="text-black"
-          type="text"
+          id="bookTitle"
+          label="Title"
           placeholder="Of Mice and Men"
+          type="text"
         />
-        <label for="pages">Pages</label>
 
-        <input v-model="form.book.pages" id="pages" class="text-black" type="number" placeholder="200" />
-        <label for="word-count">Word Count</label>
-        <input
-          v-model="form.book.word_count"
-          id="word-count"
-          class="text-black"
+        <InputField
+          v-model="form.book.pages"
+          id="bookPages"
+          label="Pages"
+          placeholder="200"
           type="number"
-          placeholder="50000"
         />
 
-        <label for="status">Status</label>
-        <select v-model="form.book.status" id="status" class="text-black">
-          <option value="Read">Read</option>
-          <option value="Reading">Reading</option>
-          <option value="Plan To Read">Plan To Read</option>
-        </select>
+        <InputField
+          v-model="form.book.word_count"
+          id="bookWordCount"
+          label="Word Count"
+          placeholder="50000"
+          type="number"
+        />
+
+        <InputSelect
+          v-model="form.book.status"
+          id="readingStatus"
+          label="Status"
+          :options="[
+            { value: 'Read', label: 'Read' },
+            { value: 'Reading', label: 'Reading' },
+            { value: 'Plan To Read', label: 'Plan To Read' },
+          ]"
+        />
       </fieldset>
 
       <fieldset class="flex flex-col gap-4">
@@ -101,32 +124,34 @@ onMounted(async () => {
           <input type="radio" id="newAuthor" value="new" v-model="isNewAuthor" />
         </div>
 
-        <select v-if="isNewAuthor == 'existing'" v-model="form.existingAuthorID" class="text-black">
-          <option v-for="author in authors" :key="author.author_id" :value="author.author_id">{{ author.first_name }} {{ author.last_name }}</option>
-        </select>
+        <InputSelect
+          v-model="form.existingAuthorID"
+          v-if="isNewAuthor == 'existing'"
+          id="isNewAuthor"
+          label="Add Author"
+          :options="authorsAsOptions"
+        />
 
-        <div v-else>
-          <label for="title">First Name</label>
-          <input
+        <div v-else class="flex flex-col gap-4">
+          <InputField
             v-model="form.author.first_name"
-            id="title"
-            class="text-black"
-            type="text"
+            id="authorFirstName"
+            label="First Name"
             placeholder="John"
+            type="text"
           />
 
-          <label for="title">Last Name</label>
-          <input
+          <InputField
             v-model="form.author.last_name"
-            id="title"
-            class="text-black"
-            type="text"
+            id="authorLastName"
+            label="Last Name"
             placeholder="Steinbeck"
+            type="text"
           />
         </div>
       </fieldset>
 
-      <button type="submit" class="bg-slate-800 rounded px-4 py-2">Submit</button>
+      <button type="submit" class="bg-slate-800 rounded px-4 py-2 mt-8">Submit</button>
     </form>
   </div>
 </template>

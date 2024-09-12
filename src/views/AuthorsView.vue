@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive } from 'vue'
+import { onMounted, reactive } from 'vue'
 import axios from 'axios';
-import DetailsCard from '@/components/BookCard.vue'
-import StatusButtonGroup from '@/components/StatusButtonGroup.vue'
 
 const state = reactive({
   authors: [],
