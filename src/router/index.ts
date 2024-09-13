@@ -1,8 +1,8 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import BooksView from '@/views/BooksView.vue'
-import AuthorsView from '@/views/AuthorsView.vue'
-import AddBookView from '@/views/AddBookView.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import HomeView from '../views/HomeView.vue';
+import books from '@/router/routes/books';
+import authors from '@/router/routes/authors';
+import NotFoundView from '@/views/NotFoundView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,20 +12,12 @@ const router = createRouter({
       name: 'home',
       component: HomeView
     },
+    ...books,
+    ...authors,
     {
-      path: '/books',
-      name: 'books',
-      component: BooksView
-    },
-    {
-      path: '/authors',
-      name: 'authors',
-      component: AuthorsView
-    },
-    {
-      path: '/books/add',
-      name: 'add-books',
-      component: AddBookView
+      path: '/:catchAll(.*)',
+      name: 'not-found',
+      component: NotFoundView,
     },
   ]
 })

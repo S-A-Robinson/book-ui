@@ -1,24 +1,51 @@
 <script setup lang="ts">
+import InputSelect from '@/components/InputSelect.vue';
+import { ref } from 'vue';
+import InputButton from '@/components/InputButton.vue';
+import type { BookWithAuthorDetails } from '../../models/models';
+
 interface Props {
-  id: number,
-  title: string,
-  pages: number,
-  wordCount: number,
-  status: string,
-  author: string,
+  book: BookWithAuthorDetails,
+  handleStatusChange(bookID: number, status: string),
 }
-  const props = defineProps<Props>()
+const props = defineProps<Props>()
+
+const currentStatus = ref(props.book.status);
+
 </script>
 
 <template>
-  <div class="flex flex-col justify-between min-h-48 bg-slate-900 rounded p-4 text-center">
-    <h2 class="text-5xl mb-2">{{ props.title }}</h2>
-    <h3>by {{ props.author }}</h3>
-    <div class="flex flex-row justify-center gap-5">
-      <span>pages: {{ props.pages }}</span>
-      <span>words: {{ props.wordCount }}</span>
-      <span>status: {{ props.status }}</span>
+  <div class="flex flex-col justify-between min-w-64 bg-slate-900 rounded p-4 text-center transition-transform hover:scale-[1.02]">
+    <div class="my-auto">
+      <h2 class="text-4xl mb-2">{{ props.book.title }}</h2>
+      <h3>by {{ props.book.author.first_name }} {{ props.book.author.last_name }}</h3>
     </div>
-    <button class="bg-slate-800" @click="$emit('deleteBook', props.id)">Delete</button>
+    <div class="mt-2">
+      <div class="bg-slate-800 rounded py-2">
+        <h2>Stats</h2>
+        <div>
+          <span>pages: {{ props.book.pages }}</span>
+          <span class="ml-4">words: {{ props.book.word_count }}</span>
+        </div>
+      </div>
+      <div class="flex justify-between items-end mt-2">
+        <InputSelect
+          v-model="currentStatus"
+          @update:modelValue="(newStatus) => handleStatusChange(props.book.book_id, newStatus)"
+          :id="props.book.title + '-status'"
+          label="status"
+          :options="[
+            { value: 'Read', label: 'Read' },
+            { value: 'Reading', label: 'Reading' },
+            { value: 'Plan To Read', label: 'Plan To Read' },
+          ]"
+        />
+        <InputButton
+          label="Delete"
+          clickEvent="deleteBook"
+          @delete-book="$emit('deleteBook', props.book.book_id)"
+        />
+      </div>
+    </div>
   </div>
 </template>

@@ -10,7 +10,7 @@ const model = defineModel()
 </script>
 
 <template>
-  <label :for="props.id">{{ props.label }}</label>
+  <label v-if="label" :for="props.id">{{ props.label }}</label>
   <input
     v-model="model"
     :id="props.id"

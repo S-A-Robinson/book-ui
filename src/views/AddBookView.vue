@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
+import { useToast } from 'vue-toastification';
 import router from '@/router';
 import InputField from '@/components/InputField.vue';
 import InputSelect from '@/components/InputSelect.vue';
 import { createBook, createAuthor, getAuthors } from '@/api/api';
+import type { BookWithAuthorID } from '../../models/models';
+import InputButton from '@/components/InputButton.vue';
 
 const isNewAuthor = ref('existing');
 const authors = ref([]);
 const authorsAsOptions = ref([]);
 const isLoading = ref(true);
+
+const toast = useToast();
 
 const form = reactive({
   book: {
@@ -26,9 +31,10 @@ const form = reactive({
 
 async function handleSubmit() {
   if (isNewAuthor.value == 'existing') {
-    await createBook({...form.book, author_id: form.existingAuthorID})
+    await createBook({...form.book, author_id: form.existingAuthorID} as BookWithAuthorID)
       .then(() => {
         router.push('/books');
+        toast.success('Book created successfully.');
       });
   } else {
     await createAuthor(form.author)
@@ -40,9 +46,11 @@ async function handleSubmit() {
       })
       .then(async () => {
         await router.push('/books');
+        toast.success('Book created successfully.');
       })
       .catch(error => {
         console.error('Error creating book', error);
+        toast.error('Error creating book');
       });
   }
 }
@@ -57,7 +65,9 @@ onMounted(async () => {
         value: author.author_id,
         label: author.first_name + ' ' + author.last_name,
       })
-    })
+    });
+
+    form.existingAuthorID = retrievedAuthors[0].author_id;
   } catch (error) {
     console.error('Error fetching authors', error);
   } finally {
@@ -146,7 +156,10 @@ onMounted(async () => {
         </div>
       </fieldset>
 
-      <button type="submit" class="bg-slate-800 rounded px-4 py-2 mt-8">Submit</button>
+      <InputButton
+        class="mt-8"
+        label="Submit"
+      />
     </form>
   </div>
 </template>

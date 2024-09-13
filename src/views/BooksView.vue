@@ -1,27 +1,39 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue';
-import DetailsCard from '@/components/BookCard.vue';
+import { onMounted, ref } from 'vue';
+import { useToast } from 'vue-toastification';
+import BookCard from '@/components/BookCard.vue';
 import StatusButtonGroup from '@/components/StatusButtonGroup.vue';
-import { getBooks, deleteBook } from '@/api/api';
+import { getBooks, updateBook, deleteBook } from '@/api/api';
+import InputButton from '@/components/InputButton.vue';
+import type { BookWithAuthorDetails } from '../../models/models';
 
-const state = reactive({
-  books: [],
-  isLoading: true,
-});
+const books = ref<BookWithAuthorDetails[]>([]);
+const isLoading = ref(true);
+
+const toast = useToast();
 
 async function getAllBooks() {
-  state.books = await getBooks().then(
-    state.isLoading = false
-  );
+  books.value = await getBooks();
+  isLoading.value = false;
+}
+
+async function updateBookStatus(id: number, status: string) {
+  await updateBook(id, status);
+  toast.success('Book updated successfully.');
 }
 
 async function deleteBookById(id: number) {
-  await deleteBook(id);
-  state.books = await getBooks();
+  const confirm = window.confirm(`Are you sure you want to delete this book?`);
+
+  if (confirm) {
+    await deleteBook(id);
+    books.value = await getBooks();
+    toast.success('Book deleted successfully.');
+  }
 }
 
 async function filterBooksByStatus(status: string) {
-  state.books = await getBooks(status);
+  books.value = await getBooks(status);
 }
 
 onMounted(async () => {
@@ -30,26 +42,21 @@ onMounted(async () => {
 </script>
 
 <template>
-  <span v-if="state.isLoading">Loading...</span>
+  <span v-if="isLoading">Loading...</span>
 
-  <div v-else class="flex flex-row justify-between items-center w-svw">
-    <h1 class="text-7xl ml-20 my-4">Books</h1>
+  <span v-else-if="!isLoading && books.length === 0">This is the start of your collection! Click the 'Add New Book button to add your first book.'</span>
+
+  <div v-else class="flex flex-row justify-between items-center w-svw px-4 md:px-20 py-4">
     <RouterLink to="/books/add">
-      <button class="bg-slate-800 rounded px-4 py-2">Add New Book</button>
+      <InputButton>Add New Book</InputButton>
     </RouterLink>
-    <div class="mr-20">
-      <StatusButtonGroup @filter-status="(status) => filterBooksByStatus(status)" />
-    </div>
+    <StatusButtonGroup @filter-status="(status) => filterBooksByStatus(status)" />
   </div>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-4 md:mx-20">
-    <DetailsCard
-      v-for="book in state.books" :key="book.book_id"
-      :id="book.book_id"
-      :title="book.title"
-      :pages="book.pages"
-      :wordCount="book.word_count"
-      :status="book.status"
-      :author="book.author.first_name + ' ' + book.author.last_name"
+    <BookCard
+      v-for="book in books" :key="book.book_id"
+      :book="book"
+      :handleStatusChange="updateBookStatus"
       @delete-book="(id) => deleteBookById(id)"
     />
   </div>
