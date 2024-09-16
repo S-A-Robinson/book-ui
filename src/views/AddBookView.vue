@@ -1,76 +1,79 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
+import { useField, useForm } from 'vee-validate';
 import router from '@/router';
+import { createBook, getAuthors } from '@/api/api';
 import InputField from '@/components/InputField.vue';
 import InputSelect from '@/components/InputSelect.vue';
-import { createBook, createAuthor, getAuthors } from '@/api/api';
-import type { BookWithAuthorID } from '../../models/models';
 import InputButton from '@/components/InputButton.vue';
 
-const isNewAuthor = ref('existing');
 const authors = ref([]);
 const authorsAsOptions = ref([]);
 const isLoading = ref(true);
 
 const toast = useToast();
 
-const form = reactive({
-  book: {
-    title: '',
-    pages: null,
-    word_count: null,
-    status: 'Read',
+const validationSchema = {
+  title: (value) => {
+    if (!value) return 'This field is required'
+    if (value.length > 100) return 'The length must not exceed 100'
+    return true
   },
-  existingAuthorID: null,
-  author: {
-    first_name: '',
-    last_name: ''
+  pages: (value) => {
+    if (!value) return 'This field is required'
+    return true
+  },
+  word_count: (value) => {
+    if (!value) return 'This field is required'
+    return true
+  },
+  status: (value) => {
+    if (!value) return 'This field is required'
+    return true
+  },
+  author_id: undefined
+}
+
+const { handleSubmit, errors, setFieldValue } = useForm({
+  validationSchema,
+  initialValues: {
+    status: 'Read'
   }
-})
+});
 
-async function createBookWithExistingAuthor() {
-  await createBook({...form.book, author_id: form.existingAuthorID} as BookWithAuthorID);
-}
+const { value: title } = useField<string>('title');
+const { value: pages } = useField<number>('pages');
+const { value: word_count } = useField<number>('word_count');
+const { value: status } = useField<string>('status');
+const { value: author_id } = useField<number>('author_id');
 
-async function createBookWithNewAuthor() {
-  const newAuthorID = await createAuthor(form.author);
-  await createBook({
-    ...form.book,
-    author_id: newAuthorID
-  });
-}
-
-async function handleSubmit() {
+const submit = handleSubmit(async values => {
   try {
-    if (isNewAuthor.value == 'existing') {
-      await createBookWithExistingAuthor();
-    } else {
-      await createBookWithNewAuthor();
-    }
+    await createBook(values);
     await router.push('/books');
     toast.success('Book created successfully.');
   } catch (error) {
     console.error('Error creating book', error);
     toast.error('Error creating book');
   }
-}
+})
 
 onMounted(async () => {
   try {
     const retrievedAuthors = await getAuthors();
     authors.value = retrievedAuthors;
 
-    retrievedAuthors.map(author => {
+    retrievedAuthors.map((author) => {
       authorsAsOptions.value.push({
         value: author.author_id,
-        label: author.first_name + ' ' + author.last_name,
-      })
+        label: author.first_name + ' ' + author.last_name
+      });
     });
 
-    form.existingAuthorID = retrievedAuthors[0].author_id;
+    setFieldValue('author_id', authorsAsOptions.value[0].value);
   } catch (error) {
-    console.error('Error fetching authors', error);
+    console.error('Error fetching authors', error)
   } finally {
     isLoading.value = false;
   }
@@ -81,86 +84,59 @@ onMounted(async () => {
   <div class="w-1/4 mx-auto">
     <h1 class="text-5xl text-center mt-16">Add New Book</h1>
 
-    <form @submit.prevent="handleSubmit">
+    <form @submit="submit">
       <fieldset class="flex flex-col gap-4 my-8">
         <legend class="text-2xl mb-4">Book Details</legend>
 
         <InputField
-          v-model="form.book.title"
+          v-model="title"
           id="bookTitle"
           label="Title"
           placeholder="Of Mice and Men"
           type="text"
+          :error="errors.title"
         />
 
         <InputField
-          v-model="form.book.pages"
+          v-model="pages"
           id="bookPages"
           label="Pages"
           placeholder="200"
           type="number"
+          :error="errors.pages"
         />
 
         <InputField
-          v-model="form.book.word_count"
+          v-model="word_count"
           id="bookWordCount"
           label="Word Count"
           placeholder="50000"
           type="number"
+          :error="errors.word_count"
         />
 
         <InputSelect
-          v-model="form.book.status"
+          v-model="status"
           id="readingStatus"
           label="Status"
           :options="[
             { value: 'Read', label: 'Read' },
             { value: 'Reading', label: 'Reading' },
-            { value: 'Plan To Read', label: 'Plan To Read' },
+            { value: 'Plan To Read', label: 'Plan To Read' }
           ]"
         />
       </fieldset>
 
       <fieldset class="flex flex-col gap-4">
-        <legend class="text-2xl mb-4">Author Details</legend>
-        <div>
-          <label for="existingAuthor">Existing Author</label>
-          <input type="radio" id="existingAuthor" value="existing" v-model="isNewAuthor" checked />
-          <label for="newAuthor">New Author</label>
-          <input type="radio" id="newAuthor" value="new" v-model="isNewAuthor" />
-        </div>
-
         <InputSelect
-          v-model="form.existingAuthorID"
-          v-if="isNewAuthor == 'existing'"
+          v-model="author_id"
           id="isNewAuthor"
           label="Add Author"
           :options="authorsAsOptions"
         />
-
-        <div v-else class="flex flex-col gap-4">
-          <InputField
-            v-model="form.author.first_name"
-            id="authorFirstName"
-            label="First Name"
-            placeholder="John"
-            type="text"
-          />
-
-          <InputField
-            v-model="form.author.last_name"
-            id="authorLastName"
-            label="Last Name"
-            placeholder="Steinbeck"
-            type="text"
-          />
-        </div>
       </fieldset>
 
-      <InputButton
-        class="mt-8"
-        label="Submit"
-      />
+      <InputButton class="mt-8" label="Submit" />
     </form>
   </div>
 </template>

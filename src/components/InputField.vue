@@ -4,6 +4,7 @@ interface Props {
   label: string;
   placeholder: string;
   type: string;
+  error?: string;
 }
 const props = defineProps<Props>()
 const model = defineModel()
@@ -18,4 +19,5 @@ const model = defineModel()
     :placeholder="props.placeholder"
     class="text-black px-4 py-2"
   />
+  <span v-if="props.error" class="text-red-600">{{ props.error }}</span>
 </template>
