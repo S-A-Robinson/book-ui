@@ -1,15 +1,22 @@
 <script setup lang="ts">
   import { onMounted, ref } from 'vue';
+  import { useToast } from 'vue-toastification';
   import { getAuthors } from '@/api/api';
   import type { Author } from '../../models/models';
 
   const authors = ref<Author[]>([]);
   const isLoading = ref(true);
 
+  const toast = useToast();
+
   async function getAllAuthors() {
-    authors.value = await getAuthors().then(
-      isLoading.value = false
-    );
+    try {
+      authors.value = await getAuthors();
+      isLoading.value = false;
+    } catch (error) {
+      console.error('Error fetch authors', error);
+      toast.error('Error fetching authors');
+    }
   }
 
 onMounted(async () => {

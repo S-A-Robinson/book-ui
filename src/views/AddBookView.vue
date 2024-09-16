@@ -29,29 +29,30 @@ const form = reactive({
   }
 })
 
+async function createBookWithExistingAuthor() {
+  await createBook({...form.book, author_id: form.existingAuthorID} as BookWithAuthorID);
+}
+
+async function createBookWithNewAuthor() {
+  const newAuthorID = await createAuthor(form.author);
+  await createBook({
+    ...form.book,
+    author_id: newAuthorID
+  });
+}
+
 async function handleSubmit() {
-  if (isNewAuthor.value == 'existing') {
-    await createBook({...form.book, author_id: form.existingAuthorID} as BookWithAuthorID)
-      .then(() => {
-        router.push('/books');
-        toast.success('Book created successfully.');
-      });
-  } else {
-    await createAuthor(form.author)
-      .then(async (newAuthorID) => {
-        await createBook({
-          ...form.book,
-          author_id: newAuthorID
-        });
-      })
-      .then(async () => {
-        await router.push('/books');
-        toast.success('Book created successfully.');
-      })
-      .catch(error => {
-        console.error('Error creating book', error);
-        toast.error('Error creating book');
-      });
+  try {
+    if (isNewAuthor.value == 'existing') {
+      await createBookWithExistingAuthor();
+    } else {
+      await createBookWithNewAuthor();
+    }
+    await router.push('/books');
+    toast.success('Book created successfully.');
+  } catch (error) {
+    console.error('Error creating book', error);
+    toast.error('Error creating book');
   }
 }
 

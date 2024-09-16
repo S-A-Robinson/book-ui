@@ -13,22 +13,37 @@ const isLoading = ref(true);
 const toast = useToast();
 
 async function getAllBooks() {
-  books.value = await getBooks();
+  try {
+    books.value = await getBooks();
+  } catch (error) {
+    console.error('Error fetching books', error);
+    toast.error('Error fetching books');
+  }
   isLoading.value = false;
 }
 
 async function updateBookStatus(id: number, status: string) {
-  await updateBook(id, status);
-  toast.success('Book updated successfully.');
+  try {
+    await updateBook(id, status);
+    toast.success('Book updated successfully.');
+  } catch (error) {
+    console.error('Error updating book', error);
+    toast.error('Error updating book');
+  }
 }
 
 async function deleteBookById(id: number) {
   const confirm = window.confirm(`Are you sure you want to delete this book?`);
 
   if (confirm) {
-    await deleteBook(id);
-    books.value = await getBooks();
-    toast.success('Book deleted successfully.');
+    try {
+      await deleteBook(id);
+      books.value = await getBooks();
+      toast.success('Book deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting book', error);
+      toast.error('Error deleting book');
+    }
   }
 }
 
