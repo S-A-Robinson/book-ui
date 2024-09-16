@@ -8,7 +8,7 @@ interface Props {
   book: BookWithAuthorDetails,
   handleStatusChange(bookID: number, status: string),
 }
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const currentStatus = ref(props.book.status);
 

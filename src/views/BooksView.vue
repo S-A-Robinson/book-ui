@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 import BookCard from '@/components/BookCard.vue';
-import StatusButtonGroup from '@/components/StatusButtonGroup.vue';
+import ButtonGroup from '@/components/ButtonGroup.vue';
 import { getBooks, updateBook, deleteBook } from '@/api/api';
 import InputButton from '@/components/InputButton.vue';
 import type { BookWithAuthorDetails } from '../../models/models';
@@ -65,7 +65,30 @@ onMounted(async () => {
     <RouterLink to="/books/add">
       <InputButton>Add New Book</InputButton>
     </RouterLink>
-    <StatusButtonGroup @filter-status="(status) => filterBooksByStatus(status)" />
+    <ButtonGroup
+      :buttons="[
+        {
+          id: 'all-button',
+          label: 'All',
+          clickHandler: () => filterBooksByStatus(),
+        },
+        {
+          id: 'read-button',
+          label: 'Read',
+          clickHandler: () => filterBooksByStatus('Read'),
+        },
+        {
+          id: 'reading-button',
+          label: 'Reading',
+          clickHandler: () => filterBooksByStatus('Reading'),
+        },
+        {
+          id: 'plan-to-read-button',
+          label: 'Plan To Read',
+          clickHandler: () => filterBooksByStatus('Plan To Read'),
+        },
+      ]"
+    />
   </div>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-4 md:mx-20">
     <BookCard
