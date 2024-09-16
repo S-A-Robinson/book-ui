@@ -8,7 +8,6 @@ import InputField from '@/components/InputField.vue';
 import InputSelect from '@/components/InputSelect.vue';
 import InputButton from '@/components/InputButton.vue';
 
-const authors = ref([]);
 const authorsAsOptions = ref([]);
 const isLoading = ref(true);
 
@@ -28,10 +27,7 @@ const validationSchema = {
     if (!value) return 'This field is required'
     return true
   },
-  status: (value) => {
-    if (!value) return 'This field is required'
-    return true
-  },
+  status: undefined,
   author_id: undefined
 }
 
@@ -62,7 +58,6 @@ const submit = handleSubmit(async values => {
 onMounted(async () => {
   try {
     const retrievedAuthors = await getAuthors();
-    authors.value = retrievedAuthors;
 
     retrievedAuthors.map((author) => {
       authorsAsOptions.value.push({

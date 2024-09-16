@@ -66,26 +66,23 @@ onMounted(async () => {
       <InputButton>Add New Book</InputButton>
     </RouterLink>
     <ButtonGroup
+      @button-pressed="filterBooksByStatus"
       :buttons="[
         {
           id: 'all-button',
           label: 'All',
-          clickHandler: () => filterBooksByStatus(),
         },
         {
           id: 'read-button',
           label: 'Read',
-          clickHandler: () => filterBooksByStatus('Read'),
         },
         {
           id: 'reading-button',
           label: 'Reading',
-          clickHandler: () => filterBooksByStatus('Reading'),
         },
         {
           id: 'plan-to-read-button',
           label: 'Plan To Read',
-          clickHandler: () => filterBooksByStatus('Plan To Read'),
         },
       ]"
     />
