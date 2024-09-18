@@ -6,9 +6,11 @@ import ButtonGroup from '@/components/ButtonGroup.vue';
 import { getBooks, updateBook, deleteBook } from '@/api/api';
 import InputButton from '@/components/InputButton.vue';
 import type { BookWithAuthorDetails } from '../../models/models';
+import ErrorMessage from '@/components/ErrorMessage.vue'
 
 const books = ref<BookWithAuthorDetails[]>([]);
 const isLoading = ref(true);
+const isFiltering = ref(false);
 
 const toast = useToast();
 
@@ -48,6 +50,7 @@ async function deleteBookById(id: number) {
 }
 
 async function filterBooksByStatus(status: string) {
+  isFiltering.value = status !== 'All';
   books.value = await getBooks(status);
 }
 
@@ -57,17 +60,16 @@ onMounted(async () => {
 </script>
 
 <template>
-  <span v-if="isLoading">Loading...</span>
+  <div>
+    <span v-if="isLoading">Loading...</span>
 
-  <span v-else-if="!isLoading && books.length === 0">This is the start of your collection! Click the 'Add New Book button to add your first book.'</span>
-
-  <div v-else class="flex flex-row justify-between items-center w-svw px-4 md:px-20 py-4">
-    <RouterLink to="/books/add">
-      <InputButton>Add New Book</InputButton>
-    </RouterLink>
-    <ButtonGroup
-      @button-pressed="filterBooksByStatus"
-      :buttons="[
+    <div v-else class="flex flex-row justify-between items-center px-4 md:px-20 py-4">
+      <RouterLink to="/books/add">
+        <InputButton>Add New Book</InputButton>
+      </RouterLink>
+      <ButtonGroup
+        @button-pressed="filterBooksByStatus"
+        :buttons="[
         {
           id: 'all-button',
           label: 'All',
@@ -85,14 +87,25 @@ onMounted(async () => {
           label: 'Plan To Read',
         },
       ]"
+      />
+    </div>
+    <ErrorMessage
+      v-if="books.length === 0 && !isFiltering"
+      title="No Books Found"
+      message="Click the 'Add New Book' button to add your first book!"
     />
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-4 md:mx-20">
-    <BookCard
-      v-for="book in books" :key="book.book_id"
-      :book="book"
-      :handleStatusChange="updateBookStatus"
-      @delete-book="(id) => deleteBookById(id)"
+    <ErrorMessage
+      v-else-if="books.length === 0 && isFiltering"
+      title="No Books With That Status"
+      message="You don't seem to have any books with that reading status. Try using a different filter or update the status of one of your books."
     />
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-4 md:mx-20">
+      <BookCard
+        v-for="book in books" :key="book.id"
+        :book="book"
+        :handleStatusChange="updateBookStatus"
+        @delete-book="(id) => deleteBookById(id)"
+      />
+    </div>
   </div>
 </template>

@@ -11,7 +11,6 @@ interface Props {
 const props = defineProps<Props>();
 
 const currentStatus = ref(props.book.status);
-
 </script>
 
 <template>
@@ -31,7 +30,7 @@ const currentStatus = ref(props.book.status);
       <div class="flex justify-between items-end mt-2">
         <InputSelect
           v-model="currentStatus"
-          @update:modelValue="(newStatus) => handleStatusChange(props.book.book_id, newStatus)"
+          @update:modelValue="(newStatus) => handleStatusChange(props.book.id, newStatus)"
           :id="props.book.title + '-status'"
           label="status"
           :options="[
@@ -43,7 +42,7 @@ const currentStatus = ref(props.book.status);
         <InputButton
           label="Delete"
           clickEvent="deleteBook"
-          @delete-book="$emit('deleteBook', props.book.book_id)"
+          @delete-book="$emit('deleteBook', props.book.id)"
         />
       </div>
     </div>

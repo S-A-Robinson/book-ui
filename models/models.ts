@@ -1,21 +1,18 @@
-export interface BaseBook {
-  book_id: number;
+export interface Book {
+  id: number;
+  author_id: number;
   title: string;
   pages: number;
   word_count: number;
   status: string;
 }
 
-export interface BookWithAuthorDetails extends BaseBook {
+export interface BookWithAuthorDetails extends Book {
   author: Author;
 }
 
-export interface BookWithAuthorID extends BaseBook {
-  author_id: number;
-}
-
 export interface Author {
-  author_id: number;
+  id: number;
   first_name: string;
   last_name: string;
 }
