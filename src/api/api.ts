@@ -32,3 +32,8 @@ export async function createAuthor(newAuthor: Author) {
 export async function deleteAuthor(id: number) {
   await axios.delete(`/api/authors/${id}`);
 }
+
+export async function getStats() {
+  const response = await axios.get('/api/stats');
+  return response.data;
+}

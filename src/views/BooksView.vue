@@ -4,12 +4,13 @@ import { useToast } from 'vue-toastification';
 import MoonLoader from 'vue-spinner/src/MoonLoader.vue';
 import BookCard from '@/components/BookCard.vue';
 import ButtonGroup from '@/components/ButtonGroup.vue';
-import { getBooks, updateBook, deleteBook } from '@/api/api';
+import { getBooks, updateBook, deleteBook, getStats } from '@/api/api'
 import InputButton from '@/components/InputButton.vue';
 import type { BookWithAuthorDetails } from '../../models/models';
 import ErrorMessage from '@/components/ErrorMessage.vue'
 
 const books = ref<BookWithAuthorDetails[]>([]);
+const stats = ref({});
 const isLoading = ref(true);
 const isFiltering = ref(false);
 
@@ -57,6 +58,7 @@ async function filterBooksByStatus(status: string) {
 
 onMounted(async () => {
   await getAllBooks();
+  stats.value = await getStats();
 });
 </script>
 
@@ -70,6 +72,10 @@ onMounted(async () => {
         <RouterLink to="/books/add">
           <InputButton>Add New Book</InputButton>
         </RouterLink>
+        <div>
+          <span class="mr-8">Pages: {{ stats.Pages }}</span>
+          <span>Word Count: {{ stats.WordCount }}</span>
+        </div>
         <ButtonGroup
           @button-pressed="filterBooksByStatus"
           :buttons="[
