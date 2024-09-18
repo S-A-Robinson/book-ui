@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
+import MoonLoader from 'vue-spinner/src/MoonLoader.vue';
 import { deleteAuthor, getAuthors } from '@/api/api';
 import type { Author } from '../../models/models';
 import InputButton from '@/components/InputButton.vue';
 import AuthorCard from '@/components/AuthorCard.vue';
+import ErrorMessage from '@/components/ErrorMessage.vue';
 
 const authors = ref<Author[]>([]);
 const isLoading = ref(true);
@@ -43,11 +45,19 @@ onMounted(async () => {
 
 <template>
   <main>
-    <div class="px-4 md:px-20 py-4">
+    <span v-if="isLoading">
+      <MoonLoader />
+    </span>
+    <div v-else class="px-4 md:px-20 py-4">
       <RouterLink to="/authors/add">
         <InputButton>Add New Author</InputButton>
       </RouterLink>
     </div>
+    <ErrorMessage
+      v-if="!isLoading && authors.length === 0"
+      title="No Authors Found"
+      message="Click the 'Add New Author' button to add an author!"
+    />
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mx-4 md:mx-20">
       <AuthorCard
         v-for="author in authors" :key="author.id"

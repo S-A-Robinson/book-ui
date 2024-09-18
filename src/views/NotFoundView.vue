@@ -1,3 +1,8 @@
+<script setup lang="ts">
+
+import ErrorMessage from '@/components/ErrorMessage.vue'
+</script>
+
 <template>
-  <h1 class="text-8xl font-bold">404</h1>
+  <ErrorMessage title="404" message="Looks like you've stumbled across a page that doesn't exist" />
 </template>

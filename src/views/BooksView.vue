@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
+import MoonLoader from 'vue-spinner/src/MoonLoader.vue';
 import BookCard from '@/components/BookCard.vue';
 import ButtonGroup from '@/components/ButtonGroup.vue';
 import { getBooks, updateBook, deleteBook } from '@/api/api';
@@ -61,15 +62,17 @@ onMounted(async () => {
 
 <template>
   <div>
-    <span v-if="isLoading">Loading...</span>
-
-    <div v-else class="flex flex-row justify-between items-center px-4 md:px-20 py-4">
-      <RouterLink to="/books/add">
-        <InputButton>Add New Book</InputButton>
-      </RouterLink>
-      <ButtonGroup
-        @button-pressed="filterBooksByStatus"
-        :buttons="[
+    <span v-if="isLoading">
+      <MoonLoader />
+    </span>
+    <div v-else>
+      <div class="flex flex-row justify-between items-center px-4 md:px-20 py-4">
+        <RouterLink to="/books/add">
+          <InputButton>Add New Book</InputButton>
+        </RouterLink>
+        <ButtonGroup
+          @button-pressed="filterBooksByStatus"
+          :buttons="[
         {
           id: 'all-button',
           label: 'All',
@@ -87,25 +90,26 @@ onMounted(async () => {
           label: 'Plan To Read',
         },
       ]"
+        />
+      </div>
+      <ErrorMessage
+        v-if="books.length === 0 && !isFiltering"
+        title="No Books Found"
+        message="Click the 'Add New Book' button to add your first book!"
       />
-    </div>
-    <ErrorMessage
-      v-if="books.length === 0 && !isFiltering"
-      title="No Books Found"
-      message="Click the 'Add New Book' button to add your first book!"
-    />
-    <ErrorMessage
-      v-else-if="books.length === 0 && isFiltering"
-      title="No Books With That Status"
-      message="You don't seem to have any books with that reading status. Try using a different filter or update the status of one of your books."
-    />
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-4 md:mx-20">
-      <BookCard
-        v-for="book in books" :key="book.id"
-        :book="book"
-        :handleStatusChange="updateBookStatus"
-        @delete-book="(id) => deleteBookById(id)"
+      <ErrorMessage
+        v-else-if="books.length === 0 && isFiltering"
+        title="No Books With That Status"
+        message="You don't seem to have any books with that reading status. Try using a different filter or update the status of one of your books."
       />
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-4 md:mx-20">
+        <BookCard
+          v-for="book in books" :key="book.id"
+          :book="book"
+          :handleStatusChange="updateBookStatus"
+          @delete-book="(id) => deleteBookById(id)"
+        />
+      </div>
     </div>
   </div>
 </template>
