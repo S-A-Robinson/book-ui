@@ -21,6 +21,10 @@ const validationSchema = {
     if (value.length > 100) return 'The length must not exceed 100'
     return true
   },
+  image_url: (value) => {
+    if (!value) return 'This field is required'
+    return true
+  }
 }
 
 const { handleSubmit, errors } = useForm({
@@ -29,6 +33,7 @@ const { handleSubmit, errors } = useForm({
 
 const { value: first_name } = useField<string>('first_name');
 const { value: last_name } = useField<string>('last_name');
+const { value: image_url } = useField<string>('image_url');
 
 const submit = handleSubmit(async values => {
   try {
@@ -65,6 +70,15 @@ const submit = handleSubmit(async values => {
       placeholder="Steinbeck"
       type="text"
       :error="errors.last_name"
+    />
+
+    <InputField
+      v-model="image_url"
+      id="authorImageURL"
+      label="Image Url"
+      placeholder="http://source-image.com"
+      type="url"
+      :error="errors.image_url"
     />
 
     <InputButton class="mt-8" label="Submit" />
