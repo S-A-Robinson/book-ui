@@ -9,7 +9,7 @@ const props = defineProps<Props>();
 
 <template>
   <div class="mt-32 text-center">
-    <h1 class="text-5xl mb-4">{{ props.title }}</h1>
+    <h1 class="mb-4 text-5xl">{{ props.title }}</h1>
     <p>{{ props.message }}</p>
   </div>
 </template>

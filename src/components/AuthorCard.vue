@@ -9,9 +9,9 @@ const props = defineProps<Props>();
 </script>
 
 <template>
-  <div class="flex flex-col items-center p-4 rounded bg-slate-900 hover:scale-[1.02]">
-    <div class="w-24 h-24 mb-4 rounded-full bg-slate-800"></div>
-    <h1 class="text-2xl mb-4">{{ props.author.first_name }} {{ props.author.last_name}}</h1>
+  <div class="flex flex-col items-center rounded bg-slate-900 p-4 hover:scale-[1.02]">
+    <div class="mb-4 h-24 w-24 rounded-full bg-slate-800"></div>
+    <h1 class="mb-4 text-2xl">{{ props.author.first_name }} {{ props.author.last_name}}</h1>
     <InputButton
       label="Delete"
       clickEvent="deleteAuthor"

@@ -48,7 +48,7 @@ onMounted(async () => {
     <span v-if="isLoading">
       <MoonLoader />
     </span>
-    <div v-else class="px-4 md:px-20 py-4">
+    <div v-else class="px-4 py-4 md:px-20">
       <RouterLink to="/authors/add">
         <InputButton>Add New Author</InputButton>
       </RouterLink>
@@ -58,7 +58,7 @@ onMounted(async () => {
       title="No Authors Found"
       message="Click the 'Add New Author' button to add an author!"
     />
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mx-4 md:mx-20">
+    <div class="mx-4 grid grid-cols-1 gap-4 md:mx-20 md:grid-cols-2 lg:grid-cols-5">
       <AuthorCard
         v-for="author in authors" :key="author.id"
         :author="author"

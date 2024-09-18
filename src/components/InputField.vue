@@ -17,7 +17,7 @@ const model = defineModel()
     :id="props.id"
     :type="props.type"
     :placeholder="props.placeholder"
-    class="text-black px-4 py-2"
+    class="px-4 py-2 text-black"
   />
   <span v-if="props.error" class="text-red-600">{{ props.error }}</span>
 </template>

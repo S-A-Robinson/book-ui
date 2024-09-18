@@ -48,7 +48,7 @@ const submit = handleSubmit(async values => {
 
 <template>
   <form @submit="submit">
-    <h1 class="text-5xl text-center mt-16">Add New Author</h1>
+    <h1 class="mt-16 text-center text-5xl">Add New Author</h1>
     <InputField
       v-model="first_name"
       id="authorFirstName"

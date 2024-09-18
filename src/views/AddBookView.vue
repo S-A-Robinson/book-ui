@@ -85,15 +85,15 @@ onMounted(async () => {
 
 <template>
   <transition
-    enter-active-class="duration-300 ease-out delay-300"
+    enter-active-class="delay-300 duration-300 ease-out"
     enter-from-class="transform opacity-0"
     enter-to-class="opacity-100"
     leave-active-class="duration-200 ease-in"
     leave-from-class="opacity-100"
     leave-to-class="transform opacity-0"
   >
-    <div v-if="formSection === 1" class="w-1/2 mx-auto text-center mt-32">
-      <h1 class="text-2xl mb-32">Is this book from an existing author?</h1>
+    <div v-if="formSection === 1" class="mx-auto mt-32 w-1/2 text-center">
+      <h1 class="mb-32 text-2xl">Is this book from an existing author?</h1>
       <div class="flex justify-between">
         <InputButton
           clickEvent="existingAuthor"
@@ -106,18 +106,18 @@ onMounted(async () => {
         </RouterLink>
       </div>
     </div>
-    <div v-else-if="formSection === 2" class="w-1/4 mx-auto mt-16">
+    <div v-else-if="formSection === 2" class="mx-auto mt-16 w-1/4">
       <InputButton
         clickEvent="back"
         @back="() => formSection = 1"
       >
         Back
       </InputButton>
-      <h1 class="text-5xl text-center mt-16">Add New Book</h1>
+      <h1 class="mt-16 text-center text-5xl">Add New Book</h1>
 
       <form @submit="submit">
-        <fieldset class="flex flex-col gap-4 my-8">
-          <legend class="text-2xl mb-4">Book Details</legend>
+        <fieldset class="my-8 flex flex-col gap-4">
+          <legend class="mb-4 text-2xl">Book Details</legend>
 
           <InputField
             v-model="title"

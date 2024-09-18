@@ -68,7 +68,7 @@ onMounted(async () => {
       <MoonLoader />
     </span>
     <div v-else>
-      <div class="flex flex-row justify-between items-center px-4 md:px-20 py-4">
+      <div class="flex flex-row items-center justify-between px-4 py-4 md:px-20">
         <RouterLink to="/books/add">
           <InputButton>Add New Book</InputButton>
         </RouterLink>
@@ -108,7 +108,7 @@ onMounted(async () => {
         title="No Books With That Status"
         message="You don't seem to have any books with that reading status. Try using a different filter or update the status of one of your books."
       />
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-4 md:mx-20">
+      <div v-else class="mx-4 grid grid-cols-1 gap-4 md:mx-20 md:grid-cols-2 lg:grid-cols-4">
         <BookCard
           v-for="book in books" :key="book.id"
           :book="book"

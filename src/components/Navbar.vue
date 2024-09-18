@@ -8,7 +8,7 @@ const isActiveLink = (routePath) => {
 </script>
 
 <template>
-  <nav class="flex flex-row justify-center h-14 bg-slate-900">
+  <nav class="flex h-14 flex-row justify-center bg-slate-900">
     <RouterLink
       to="/"
       :class="`p-4 ${isActiveLink('/') ? 'bg-slate-950' : 'hover:bg-slate-800'}`"

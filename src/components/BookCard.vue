@@ -14,20 +14,20 @@ const currentStatus = ref(props.book.status);
 </script>
 
 <template>
-  <div class="flex flex-col justify-between bg-slate-900 rounded p-4 text-center transition-transform hover:scale-[1.02]">
+  <div class="flex flex-col justify-between rounded bg-slate-900 p-4 text-center transition-transform hover:scale-[1.02]">
     <div class="my-auto">
-      <h2 class="text-4xl mb-2">{{ props.book.title }}</h2>
+      <h2 class="mb-2 text-4xl">{{ props.book.title }}</h2>
       <h3>by {{ props.book.author.first_name }} {{ props.book.author.last_name }}</h3>
     </div>
     <div class="mt-2">
-      <div class="bg-slate-800 rounded py-2">
+      <div class="rounded bg-slate-800 py-2">
         <h2>Stats</h2>
         <div>
           <span>pages: {{ props.book.pages }}</span>
           <span class="ml-4">words: {{ props.book.word_count }}</span>
         </div>
       </div>
-      <div class="flex justify-between items-end gap-1 mt-2">
+      <div class="mt-2 flex items-end justify-between gap-1">
         <InputSelect
           v-model="currentStatus"
           @update:modelValue="(newStatus) => handleStatusChange(props.book.id, newStatus)"
