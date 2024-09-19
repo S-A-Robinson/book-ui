@@ -68,13 +68,13 @@ onMounted(async () => {
       <MoonLoader />
     </span>
     <div v-else>
-      <div class="flex flex-row items-center justify-between px-4 py-4 md:px-20">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-2 md:gap-0 px-4 py-4 md:px-20">
         <RouterLink to="/books/add">
           <InputButton>Add New Book</InputButton>
         </RouterLink>
-        <div>
-          <span class="mr-8">Pages: {{ stats.Pages }}</span>
-          <span>Word Count: {{ stats.WordCount }}</span>
+        <div class="flex flex-row md:flex-col lg:flex-row mx-4">
+          <span class="mr-8 text-nowrap">Pages: {{ stats.Pages }}</span>
+          <span class="text-nowrap">Word Count: {{ stats.WordCount }}</span>
         </div>
         <ButtonGroup
           @button-pressed="filterBooksByStatus"
