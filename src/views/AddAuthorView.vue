@@ -52,35 +52,37 @@ const submit = handleSubmit(async values => {
 </script>
 
 <template>
-  <form @submit="submit">
+  <div class="mx-auto mt-16 px-8 md:w-1/2 lg:w-1/4">
     <h1 class="mt-16 text-center text-5xl">Add New Author</h1>
-    <InputField
-      v-model="first_name"
-      id="authorFirstName"
-      label="First Name"
-      placeholder="John"
-      type="text"
-      :error="errors.first_name"
-    />
+    <form @submit="submit" class="my-8 flex flex-col gap-4">
+      <InputField
+        v-model="first_name"
+        id="authorFirstName"
+        label="First Name"
+        placeholder="John"
+        type="text"
+        :error="errors.first_name"
+      />
 
-    <InputField
-      v-model="last_name"
-      id="authorLastName"
-      label="Last Name"
-      placeholder="Steinbeck"
-      type="text"
-      :error="errors.last_name"
-    />
+      <InputField
+        v-model="last_name"
+        id="authorLastName"
+        label="Last Name"
+        placeholder="Steinbeck"
+        type="text"
+        :error="errors.last_name"
+      />
 
-    <InputField
-      v-model="image_url"
-      id="authorImageURL"
-      label="Image Url"
-      placeholder="http://source-image.com"
-      type="url"
-      :error="errors.image_url"
-    />
+      <InputField
+        v-model="image_url"
+        id="authorImageURL"
+        label="Image Url"
+        placeholder="http://www.source-image.com"
+        type="url"
+        :error="errors.image_url"
+      />
 
-    <InputButton class="mt-8" label="Submit" />
-  </form>
+      <InputButton class="mt-8" label="Submit" />
+    </form>
+  </div>
 </template>

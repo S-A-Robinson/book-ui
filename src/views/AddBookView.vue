@@ -106,7 +106,7 @@ onMounted(async () => {
         </RouterLink>
       </div>
     </div>
-    <div v-else-if="formSection === 2" class="mx-auto mt-16 w-1/4">
+    <div v-else-if="formSection === 2" class="mx-auto mt-16 px-8 md:w-1/2 lg:w-1/4">
       <InputButton
         clickEvent="back"
         @back="() => formSection = 1"
