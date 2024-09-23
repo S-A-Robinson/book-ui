@@ -1,30 +1,40 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import MoonLoader from 'vue-spinner/src/MoonLoader.vue';
+import { getBooks, updateBook, deleteBook, getStats } from '@/api/api';
+import { debounce } from '@/utils/debounce';
+import type { BookWithAuthorDetails } from '../../models/models';
 import BookCard from '@/components/BookCard.vue';
 import ButtonGroup from '@/components/ButtonGroup.vue';
-import { getBooks, updateBook, deleteBook, getStats } from '@/api/api'
 import InputButton from '@/components/InputButton.vue';
-import type { BookWithAuthorDetails } from '../../models/models';
-import ErrorMessage from '@/components/ErrorMessage.vue'
+import ErrorMessage from '@/components/ErrorMessage.vue';
+import InputField from '@/components/InputField.vue';
 
 const books = ref<BookWithAuthorDetails[]>([]);
 const stats = ref({});
 const isLoading = ref(true);
 const isFiltering = ref(false);
+const titleSearch = ref('');
+const statusFilter = ref('');
 
 const toast = useToast();
 
-async function getAllBooks() {
+async function getBooksWithFilter (query?: {status?: string, title?: string}) {
+  console.log(query?.title);
   try {
-    books.value = await getBooks();
+    books.value = await getBooks(query);
   } catch (error) {
     console.error('Error fetching books', error);
     toast.error('Error fetching books');
   }
   isLoading.value = false;
 }
+
+watch(titleSearch, debounce(async () =>
+  await getBooksWithFilter({status: statusFilter.value, title: titleSearch.value}),
+  300
+));
 
 async function updateBookStatus(id: number, status: string) {
   try {
@@ -53,11 +63,12 @@ async function deleteBookById(id: number) {
 
 async function filterBooksByStatus(status: string) {
   isFiltering.value = status !== 'All';
-  books.value = await getBooks(status);
+  statusFilter.value = status;
+  await getBooksWithFilter({ status: status, title: titleSearch.value });
 }
 
 onMounted(async () => {
-  await getAllBooks();
+  await getBooksWithFilter();
   stats.value = await getStats();
 });
 </script>
@@ -68,7 +79,9 @@ onMounted(async () => {
       <MoonLoader />
     </span>
     <div v-else>
-      <div class="flex flex-col md:flex-row items-center justify-between gap-2 md:gap-0 px-4 py-4 md:px-20">
+      <div
+        class="flex flex-col md:flex-row items-center justify-between gap-2 md:gap-0 px-4 py-4 md:px-20"
+      >
         <RouterLink to="/books/add">
           <InputButton>Add New Book</InputButton>
         </RouterLink>
@@ -76,26 +89,32 @@ onMounted(async () => {
           <span class="mr-8 text-nowrap">Pages: {{ stats.Pages }}</span>
           <span class="text-nowrap">Word Count: {{ stats.WordCount }}</span>
         </div>
+        <InputField
+          v-model="titleSearch"
+          id="bookSearch"
+          placeholder="search"
+          type="text"
+        />
         <ButtonGroup
           @button-pressed="filterBooksByStatus"
           :buttons="[
-        {
-          id: 'all-button',
-          label: 'All',
-        },
-        {
-          id: 'read-button',
-          label: 'Read',
-        },
-        {
-          id: 'reading-button',
-          label: 'Reading',
-        },
-        {
-          id: 'plan-to-read-button',
-          label: 'Plan To Read',
-        },
-      ]"
+            {
+              id: 'all-button',
+              label: 'All'
+            },
+            {
+              id: 'read-button',
+              label: 'Read'
+            },
+            {
+              id: 'reading-button',
+              label: 'Reading'
+            },
+            {
+              id: 'plan-to-read-button',
+              label: 'Plan To Read'
+            }
+          ]"
         />
       </div>
       <ErrorMessage
@@ -110,7 +129,8 @@ onMounted(async () => {
       />
       <div v-else class="mx-4 grid grid-cols-1 gap-4 md:mx-20 md:grid-cols-2 lg:grid-cols-4">
         <BookCard
-          v-for="book in books" :key="book.id"
+          v-for="book in books"
+          :key="book.id"
           :book="book"
           :handleStatusChange="updateBookStatus"
           @delete-book="(id) => deleteBookById(id)"

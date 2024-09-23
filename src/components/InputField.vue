@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface Props {
   id: string;
-  label: string;
+  label?: string;
   placeholder: string;
   type: string;
   error?: string;
@@ -17,7 +17,7 @@ const model = defineModel()
     :id="props.id"
     :type="props.type"
     :placeholder="props.placeholder"
-    class="px-4 py-2 text-black"
+    class="px-4 py-2 rounded text-black"
   />
   <span v-if="props.error" class="text-red-600">{{ props.error }}</span>
 </template>

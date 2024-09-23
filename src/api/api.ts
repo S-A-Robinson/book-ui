@@ -1,9 +1,22 @@
 import axios from 'axios';
 import type { Author, BookWithAuthorDetails, Book } from '../../models/models';
 
-export async function getBooks(status?: string) {
-  if (status === 'All') status = null;
-  const response = await axios.get<BookWithAuthorDetails[]>(`http://localhost:8080/books${status ? `?status=${status}` : ''}`);
+export async function getBooks(query?: {status?: string, title?: string}) {
+  let queryString;
+
+  if (query) {
+    if (query.status === 'All') query.status = null;
+
+    if (query.status && query.title) {
+      queryString = `?status=${query.status}&title=${query.title}`;
+    } else if (query.status && !query.title) {
+      queryString = `?status=${query.status}`;
+    } else if (!query.status && query.title) {
+      queryString = `?title=${query.title}`;
+    }
+  }
+
+  const response = await axios.get<BookWithAuthorDetails[]>(`http://localhost:8080/books${queryString ? queryString : ''}`);
   return response.data;
 }
 
