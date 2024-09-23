@@ -21,7 +21,6 @@ const statusFilter = ref('');
 const toast = useToast();
 
 async function getBooksWithFilter (query?: {status?: string, title?: string}) {
-  console.log(query?.title);
   try {
     books.value = await getBooks(query);
   } catch (error) {

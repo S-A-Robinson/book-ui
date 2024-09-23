@@ -2,6 +2,7 @@
 import { useToast } from 'vue-toastification';
 import { useRoute } from 'vue-router';
 import { useField, useForm } from 'vee-validate';
+import { string, object } from 'yup';
 import router from '@/router';
 import { createAuthor } from '@/api/api';
 import InputField from '@/components/InputField.vue';
@@ -10,22 +11,11 @@ import InputButton from '@/components/InputButton.vue';
 const toast = useToast();
 const route = useRoute();
 
-const validationSchema = {
-  first_name: (value) => {
-    if (!value) return 'This field is required'
-    if (value.length > 100) return 'The length must not exceed 100'
-    return true
-  },
-  last_name: (value) => {
-    if (!value) return 'This field is required'
-    if (value.length > 100) return 'The length must not exceed 100'
-    return true
-  },
-  image_url: (value) => {
-    if (!value) return 'This field is required'
-    return true
-  }
-}
+const validationSchema = object({
+  first_name: string().max(100).required(),
+  last_name: string().max(100).required(),
+  image_url: string().url().required(),
+})
 
 const { handleSubmit, errors } = useForm({
   validationSchema,

@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useField, useForm } from 'vee-validate';
+import { object, string, number } from 'yup';
 import { useRoute } from 'vue-router';
 import router from '@/router';
 import { createBook, getAuthors } from '@/api/api';
@@ -16,23 +17,13 @@ const formSection = ref(1);
 const toast = useToast();
 const route = useRoute();
 
-const validationSchema = {
-  title: (value) => {
-    if (!value) return 'This field is required'
-    if (value.length > 100) return 'The length must not exceed 100'
-    return true
-  },
-  pages: (value) => {
-    if (!value) return 'This field is required'
-    return true
-  },
-  word_count: (value) => {
-    if (!value) return 'This field is required'
-    return true
-  },
-  status: undefined,
+const validationSchema = object({
+  title: string().max(100).required(),
+  pages: number().required(),
+  word_count: number().required(),
+  status: string().required(),
   author_id: undefined
-}
+})
 
 const { handleSubmit, errors, setFieldValue } = useForm({
   validationSchema,
