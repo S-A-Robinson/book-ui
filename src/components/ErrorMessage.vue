@@ -1,10 +1,10 @@
 <script setup lang="ts">
 interface Props {
-  title: string,
-  message: string,
+  title: string
+  message: string
 }
 
-const props = defineProps<Props>();
+const props = defineProps<Props>()
 </script>
 
 <template>

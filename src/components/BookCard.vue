@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import InputSelect from '@/components/InputSelect.vue';
-import { ref } from 'vue';
-import InputButton from '@/components/InputButton.vue';
-import type { BookWithAuthorDetails } from '../../models/models';
+import InputSelect from '@/components/InputSelect.vue'
+import { ref } from 'vue'
+import InputButton from '@/components/InputButton.vue'
+import type { BookWithAuthorDetails } from '@/models/models'
 
 interface Props {
-  book: BookWithAuthorDetails,
-  handleStatusChange(bookID: number, status: string),
+  book: BookWithAuthorDetails
+  handleStatusChange(bookID: number, status: string)
 }
-const props = defineProps<Props>();
+const props = defineProps<Props>()
 
-const currentStatus = ref(props.book.status);
+const currentStatus = ref(props.book.status)
 </script>
 
 <template>
-  <div class="flex flex-col justify-between rounded bg-slate-900 p-4 text-center transition-transform hover:scale-[1.02]">
+  <div
+    class="flex flex-col justify-between rounded bg-slate-900 p-4 text-center transition-transform hover:scale-[1.02]"
+  >
     <div class="my-auto">
       <h2 class="mb-2 text-4xl">{{ props.book.title }}</h2>
       <h3>by {{ props.book.author.first_name }} {{ props.book.author.last_name }}</h3>
@@ -36,7 +38,7 @@ const currentStatus = ref(props.book.status);
           :options="[
             { value: 'Read', label: 'Read' },
             { value: 'Reading', label: 'Reading' },
-            { value: 'Plan To Read', label: 'Plan To Read' },
+            { value: 'Plan To Read', label: 'Plan To Read' }
           ]"
         />
         <InputButton

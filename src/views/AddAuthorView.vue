@@ -1,42 +1,43 @@
 <script setup lang="ts">
-import { useToast } from 'vue-toastification';
-import { useRoute } from 'vue-router';
-import { useField, useForm } from 'vee-validate';
-import { string, object } from 'yup';
-import router from '@/router';
-import { createAuthor } from '@/api/api';
-import InputField from '@/components/InputField.vue';
-import InputButton from '@/components/InputButton.vue';
+import { useToast } from 'vue-toastification'
+import { useRoute } from 'vue-router'
+import { useField, useForm } from 'vee-validate'
+import { string, object } from 'yup'
+import router from '@/router'
+import { createAuthor } from '@/api/api'
+import InputField from '@/components/InputField.vue'
+import InputButton from '@/components/InputButton.vue'
+import type { Author } from '@/models/models'
 
-const toast = useToast();
-const route = useRoute();
+const toast = useToast()
+const route = useRoute()
 
 const validationSchema = object({
   first_name: string().max(100).required(),
   last_name: string().max(100).required(),
-  image_url: string().url().required(),
+  image_url: string().url().required()
 })
 
 const { handleSubmit, errors } = useForm({
-  validationSchema,
-});
+  validationSchema
+})
 
-const { value: first_name } = useField<string>('first_name');
-const { value: last_name } = useField<string>('last_name');
-const { value: image_url } = useField<string>('image_url');
+const { value: first_name } = useField<string>('first_name')
+const { value: last_name } = useField<string>('last_name')
+const { value: image_url } = useField<string>('image_url')
 
-const submit = handleSubmit(async values => {
+const submit = handleSubmit(async (values) => {
   try {
-    const newAuthorID = await createAuthor(values);
+    const newAuthorID = await createAuthor(values as Author)
     if (route.query.creatingBook === 'true') {
-      await router.push(`/books/add?author_id=${newAuthorID}`);
+      await router.push(`/books/add?author_id=${newAuthorID}`)
     } else {
-      await router.push('/authors');
+      await router.push('/authors')
     }
-    toast.success('Author created successfully.');
+    toast.success('Author created successfully.')
   } catch (error) {
-    console.error('Error creating author', error);
-    toast.error('Error creating author');
+    console.error('Error creating author', error)
+    toast.error('Error creating author')
   }
 })
 </script>

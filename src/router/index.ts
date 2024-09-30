@@ -1,8 +1,8 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
-import books from '@/router/routes/books';
-import authors from '@/router/routes/authors';
-import NotFoundView from '@/views/NotFoundView.vue';
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '@/views/HomeView.vue'
+import books from '@/router/routes/books'
+import authors from '@/router/routes/authors'
+import NotFoundView from '@/views/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,8 +17,8 @@ const router = createRouter({
     {
       path: '/:catchAll(.*)',
       name: 'not-found',
-      component: NotFoundView,
-    },
+      component: NotFoundView
+    }
   ]
 })
 

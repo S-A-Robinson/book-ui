@@ -1,5 +1,5 @@
-import AuthorsView from '@/views/AuthorsView.vue';
-import AddAuthorView from '@/views/AddAuthorView.vue';
+import AuthorsView from '@/views/AuthorsView.vue'
+import AddAuthorView from '@/views/AddAuthorView.vue'
 
 export default [
   {
@@ -11,5 +11,5 @@ export default [
     path: '/authors/add',
     name: 'add-authors',
     component: AddAuthorView
-  },
+  }
 ]

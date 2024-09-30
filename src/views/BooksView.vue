@@ -1,75 +1,78 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
-import { useToast } from 'vue-toastification';
-import MoonLoader from 'vue-spinner/src/MoonLoader.vue';
-import { getBooks, updateBook, deleteBook, getStats } from '@/api/api';
-import { debounce } from '@/utils/debounce';
-import type { BookWithAuthorDetails } from '../../models/models';
-import BookCard from '@/components/BookCard.vue';
-import ButtonGroup from '@/components/ButtonGroup.vue';
-import InputButton from '@/components/InputButton.vue';
-import ErrorMessage from '@/components/ErrorMessage.vue';
-import InputField from '@/components/InputField.vue';
+import { onMounted, ref, watch } from 'vue'
+import { useToast } from 'vue-toastification'
+import MoonLoader from 'vue-spinner/src/MoonLoader.vue'
+import { getBooks, updateBook, deleteBook, getStats } from '@/api/api'
+import { debounce } from '@/utils/debounce'
+import type { BookWithAuthorDetails } from '@/models/models'
+import BookCard from '@/components/BookCard.vue'
+import ButtonGroup from '@/components/ButtonGroup.vue'
+import InputButton from '@/components/InputButton.vue'
+import ErrorMessage from '@/components/ErrorMessage.vue'
+import InputField from '@/components/InputField.vue'
 
-const books = ref<BookWithAuthorDetails[]>([]);
-const stats = ref({});
-const isLoading = ref(true);
-const isFiltering = ref(false);
-const titleSearch = ref('');
-const statusFilter = ref('');
+const books = ref<BookWithAuthorDetails[]>([])
+const stats = ref({})
+const isLoading = ref(true)
+const isFiltering = ref(false)
+const titleSearch = ref('')
+const statusFilter = ref('')
 
-const toast = useToast();
+const toast = useToast()
 
-async function getBooksWithFilter (query?: {status?: string, title?: string}) {
+async function getBooksWithFilter(query?: { status?: string; title?: string }) {
   try {
-    books.value = await getBooks(query);
+    books.value = await getBooks(query)
   } catch (error) {
-    console.error('Error fetching books', error);
-    toast.error('Error fetching books');
+    console.error('Error fetching books', error)
+    toast.error('Error fetching books')
   }
-  isLoading.value = false;
+  isLoading.value = false
 }
 
-watch(titleSearch, debounce(async () =>
-  await getBooksWithFilter({status: statusFilter.value, title: titleSearch.value}),
-  300
-));
+watch(
+  titleSearch,
+  debounce(
+    async () => await getBooksWithFilter({ status: statusFilter.value, title: titleSearch.value }),
+    300
+  )
+)
 
 async function updateBookStatus(id: number, status: string) {
   try {
-    await updateBook(id, status);
-    toast.success('Book updated successfully.');
+    await updateBook(id, status)
+    toast.success('Book updated successfully.')
   } catch (error) {
-    console.error('Error updating book', error);
-    toast.error('Error updating book');
+    console.error('Error updating book', error)
+    toast.error('Error updating book')
   }
 }
 
 async function deleteBookById(id: number) {
-  const confirm = window.confirm(`Are you sure you want to delete this book?`);
+  const confirm = window.confirm(`Are you sure you want to delete this book?`)
 
   if (confirm) {
     try {
-      await deleteBook(id);
-      books.value = await getBooks();
-      toast.success('Book deleted successfully.');
+      await deleteBook(id)
+      books.value = await getBooks()
+      toast.success('Book deleted successfully.')
     } catch (error) {
-      console.error('Error deleting book', error);
-      toast.error('Error deleting book');
+      console.error('Error deleting book', error)
+      toast.error('Error deleting book')
     }
   }
 }
 
 async function filterBooksByStatus(status: string) {
-  isFiltering.value = status !== 'All';
-  statusFilter.value = status;
-  await getBooksWithFilter({ status: status, title: titleSearch.value });
+  isFiltering.value = status !== 'All'
+  statusFilter.value = status
+  await getBooksWithFilter({ status: status, title: titleSearch.value })
 }
 
 onMounted(async () => {
-  await getBooksWithFilter();
-  stats.value = await getStats();
-});
+  await getBooksWithFilter()
+  stats.value = await getStats()
+})
 </script>
 
 <template>
@@ -88,12 +91,7 @@ onMounted(async () => {
           <span class="mr-8 text-nowrap">Pages: {{ stats.Pages }}</span>
           <span class="text-nowrap">Word Count: {{ stats.WordCount }}</span>
         </div>
-        <InputField
-          v-model="titleSearch"
-          id="bookSearch"
-          placeholder="search"
-          type="text"
-        />
+        <InputField v-model="titleSearch" id="bookSearch" placeholder="search" type="text" />
         <ButtonGroup
           @button-pressed="filterBooksByStatus"
           :buttons="[

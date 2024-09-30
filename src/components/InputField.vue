@@ -1,10 +1,10 @@
 <script setup lang="ts">
 interface Props {
-  id: string;
-  label?: string;
-  placeholder: string;
-  type: string;
-  error?: string;
+  id: string
+  label?: string
+  placeholder: string
+  type: string
+  error?: string
 }
 const props = defineProps<Props>()
 const model = defineModel()

@@ -1,5 +1,5 @@
-import BooksView from '@/views/BooksView.vue';
-import AddBookView from '@/views/AddBookView.vue';
+import BooksView from '@/views/BooksView.vue'
+import AddBookView from '@/views/AddBookView.vue'
 
 export default [
   {
@@ -11,5 +11,5 @@ export default [
     path: '/books/add',
     name: 'add-books',
     component: AddBookView
-  },
+  }
 ]

@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useToast } from 'vue-toastification';
-import { useField, useForm } from 'vee-validate';
-import { object, string, number } from 'yup';
-import { useRoute } from 'vue-router';
-import router from '@/router';
-import { createBook, getAuthors } from '@/api/api';
-import InputField from '@/components/InputField.vue';
-import InputSelect from '@/components/InputSelect.vue';
-import InputButton from '@/components/InputButton.vue';
+import { ref, onMounted } from 'vue'
+import { useToast } from 'vue-toastification'
+import { useField, useForm } from 'vee-validate'
+import { object, string, number } from 'yup'
+import { useRoute } from 'vue-router'
+import router from '@/router'
+import { createBook, getAuthors } from '@/api/api'
+import InputField from '@/components/InputField.vue'
+import InputSelect from '@/components/InputSelect.vue'
+import InputButton from '@/components/InputButton.vue'
+import type { Book } from '@/models/models'
 
-const authorsAsOptions = ref([]);
-const isLoading = ref(true);
-const formSection = ref(1);
+const authorsAsOptions = ref([])
+const isLoading = ref(true)
+const formSection = ref(1)
 
-const toast = useToast();
-const route = useRoute();
+const toast = useToast()
+const route = useRoute()
 
 const validationSchema = object({
   title: string().max(100).required(),
@@ -30,46 +31,46 @@ const { handleSubmit, errors, setFieldValue } = useForm({
   initialValues: {
     status: 'Read'
   }
-});
+})
 
-const { value: title } = useField<string>('title');
-const { value: pages } = useField<number>('pages');
-const { value: word_count } = useField<number>('word_count');
-const { value: status } = useField<string>('status');
-const { value: author_id } = useField<number>('author_id');
+const { value: title } = useField<string>('title')
+const { value: pages } = useField<number>('pages')
+const { value: word_count } = useField<number>('word_count')
+const { value: status } = useField<string>('status')
+const { value: author_id } = useField<number>('author_id')
 
-const submit = handleSubmit(async values => {
+const submit = handleSubmit(async (values) => {
   try {
-    await createBook(values);
-    await router.push('/books');
-    toast.success('Book created successfully.');
+    await createBook(values as Book)
+    await router.push('/books')
+    toast.success('Book created successfully.')
   } catch (error) {
-    console.error('Error creating book', error);
-    toast.error('Error creating book');
+    console.error('Error creating book', error)
+    toast.error('Error creating book')
   }
 })
 
 onMounted(async () => {
   try {
-    const retrievedAuthors = await getAuthors();
+    const retrievedAuthors = await getAuthors()
 
     retrievedAuthors.map((author) => {
       authorsAsOptions.value.push({
         value: author.id,
         label: author.first_name + ' ' + author.last_name
-      });
-    });
+      })
+    })
 
     if (route.query.author_id) {
-      setFieldValue('author_id', parseInt(route.query.author_id));
-      formSection.value = 2;
+      setFieldValue('author_id', parseInt(route.query.author_id))
+      formSection.value = 2
     } else {
-      setFieldValue('author_id', authorsAsOptions.value[0].value);
+      setFieldValue('author_id', authorsAsOptions.value[0].value)
     }
   } catch (error) {
     console.error('Error fetching authors', error)
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
 })
 </script>
@@ -86,10 +87,7 @@ onMounted(async () => {
     <div v-if="formSection === 1" class="mx-auto mt-32 w-1/2 text-center">
       <h1 class="mb-32 text-2xl">Is this book from an existing author?</h1>
       <div class="flex justify-between">
-        <InputButton
-          clickEvent="existingAuthor"
-          @existing-author="() => formSection = 2"
-        >
+        <InputButton clickEvent="existingAuthor" @existing-author="() => (formSection = 2)">
           Existing Author
         </InputButton>
         <RouterLink to="/authors/add?creatingBook=true">
@@ -98,12 +96,7 @@ onMounted(async () => {
       </div>
     </div>
     <div v-else-if="formSection === 2" class="mx-auto mt-16 px-8 md:w-1/2 lg:w-1/4">
-      <InputButton
-        clickEvent="back"
-        @back="() => formSection = 1"
-      >
-        Back
-      </InputButton>
+      <InputButton clickEvent="back" @back="() => (formSection = 1)"> Back </InputButton>
       <h1 class="mt-16 text-center text-5xl">Add New Book</h1>
 
       <form @submit="submit">
@@ -142,10 +135,10 @@ onMounted(async () => {
             id="readingStatus"
             label="Status"
             :options="[
-            { value: 'Read', label: 'Read' },
-            { value: 'Reading', label: 'Reading' },
-            { value: 'Plan To Read', label: 'Plan To Read' }
-          ]"
+              { value: 'Read', label: 'Read' },
+              { value: 'Reading', label: 'Reading' },
+              { value: 'Plan To Read', label: 'Plan To Read' }
+            ]"
           />
         </fieldset>
 

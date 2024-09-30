@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import { useRoute, RouterLink } from 'vue-router';
+import { useRoute, RouterLink } from 'vue-router'
 
 const isActiveLink = (routePath) => {
-  const route = useRoute();
-  return route.path === routePath;
-};
+  const route = useRoute()
+  return route.path === routePath
+}
 </script>
 
 <template>
   <nav class="flex h-14 flex-row justify-center bg-slate-900">
-    <RouterLink
-      to="/"
-      :class="`p-4 ${isActiveLink('/') ? 'bg-slate-950' : 'hover:bg-slate-800'}`"
-    >
+    <RouterLink to="/" :class="`p-4 ${isActiveLink('/') ? 'bg-slate-950' : 'hover:bg-slate-800'}`">
       Home
     </RouterLink>
     <RouterLink
